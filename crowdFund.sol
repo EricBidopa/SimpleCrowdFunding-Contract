@@ -31,8 +31,7 @@ contract fundMe {
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
         return ethAmountInUsd;
     }
-
-   modifier onlyOwner {
+ modifier onlyOwner {
         // require(msg.sender == owner);
         if (msg.sender != i_owner) revert NotOwner();
         _;
@@ -53,4 +52,3 @@ contract fundMe {
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
-
