@@ -5,8 +5,13 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract fundMe {
     uint256 public minimumUsd = 50 * 1e10;
-    address[] public funders;  //This array stores the address of everybody that called the contract or performed a transaction (depositors)
+    address[] public funders; 
+    address public owner; //This array stores the address of everybody that called the contract or performed a transaction (depositors)
     mapping(address => uint256) public addressToAmountFunded; //This code maps the address to the amount they deposited to the contract. implement in line 15.
+
+    constructor() {
+        owner = msg.sender;
+    }
     
     
     function deposit() public payable {
@@ -31,9 +36,10 @@ contract fundMe {
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
         return ethAmountInUsd;
     }
- modifier onlyOwner {
-        // require(msg.sender == owner);
-        if (msg.sender != i_owner) revert NotOwner();
+ modifier onlyOwner() {
+        //is the message sender owner of the contract?
+        require(msg.sender == owner);
+
         _;
     }
     
@@ -51,4 +57,4 @@ contract fundMe {
         // call
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
-    }
+    }}
