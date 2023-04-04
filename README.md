@@ -8,3 +8,4 @@ The contract has a getPrice() function which returns the latest ETH to USD price
 The contract has a getConversionRate() function which takes an amount of ETH as input and returns the equivalent USD value using the getPrice() function.
 The contract has a withdraw() function which allows the owner of the contract to withdraw all the funds from the contract. It transfers the contract balance to the owner's address and sets all the amounts in the addressToAmountFunded mapping to 0. It also resets the funders array to an empty array.
 The contract uses the AggregatorV3Interface interface from the Chainlink contract to get the latest ETH to USD price. The contract also uses a modifier called onlyOwner which restricts access to certain functions to the owner of the contract.
+#
