@@ -9,7 +9,7 @@ contract fundMe {
     address public owner; //This array stores the address of everybody that called the contract or performed a transaction (depositors)
     mapping(address => uint256) public addressToAmountFunded; //This code maps the address to the amount they deposited to the contract. implement in line 15.
 
-    constructor() {
+    constructor() public {
         owner = msg.sender;
     }
     
@@ -17,9 +17,15 @@ contract fundMe {
     function deposit() public payable {
         require (getConversionRate(msg.value) >= minimumUsd, "Didn't send enough :)");
         funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] = msg.value; //this is where the msg.sender address is mapped to the amount paid. NB. it is [] and not ().
+        addressToAmountFunded[msg.sender] += msg.value; //this is where the msg.sender address is mapped to the amount paid. NB. it is [] and not ().
     }
 
+    function getVersion() public view returns (uint256) {
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(
+            0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e
+        );
+        return priceFeed.version();
+    }
 
     function getPrice() public view returns(uint256){
         AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
@@ -43,18 +49,26 @@ contract fundMe {
         _;
     }
     
-    function withdraw() public onlyOwner {
-        for (uint256 funderIndex=0; funderIndex < funders.length; funderIndex++){
+    
+    
+    
+    // Explainer from: https://solidity-by-example.org/fallback/
+  
+
+     function withdraw() public payable onlyOwner {
+        msg.sender.transfer(address(this).balance);
+
+        //iterate through all the mappings and make them 0
+        //since all the deposited amount has been withdrawn
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < funders.length;
+            funderIndex++
+        ) {
             address funder = funders[funderIndex];
             addressToAmountFunded[funder] = 0;
         }
+        //funders array will be initialized to 0
         funders = new address[](0);
-        // // transfer
-        // payable(msg.sender).transfer(address(this).balance);
-        // // send
-        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
-        // require(sendSuccess, "Send failed");
-        // call
-        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
-        require(callSuccess, "Call failed");
-    }}
+    }
+}
