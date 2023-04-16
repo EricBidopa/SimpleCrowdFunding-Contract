@@ -4,7 +4,7 @@ pragma solidity ^ 0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract fundMe {
-    uint256 public minimumUsd = 50 * 1e10;
+    uint256 public minimumUsd = 50 * 1e10; // In case i forgot, the contract only take amount not less than 50USD. so I had to using chainlink to get the real time dollar translation :)
     address[] public funders; 
     address public owner; //This array stores the address of everybody that called the contract or performed a transaction (depositors)
     mapping(address => uint256) public addressToAmountFunded; //This code maps the address to the amount they deposited to the contract. implement in line 15.
@@ -51,12 +51,10 @@ contract fundMe {
     
     
     
-    
-    // Explainer from: https://solidity-by-example.org/fallback/
-  
+      
 
      function withdraw() public payable onlyOwner {
-        msg.sender.transfer(address(this).balance);
+        payable (msg.sender).transfer(address(this).balance);
 
         //iterate through all the mappings and make them 0
         //since all the deposited amount has been withdrawn
@@ -72,3 +70,14 @@ contract fundMe {
         funders = new address[](0);
     }
 }
+
+//This is a demo video of the smart contract I wrote for crowd funding.
+//It allows for deposit from everyone by connecting to their wallet using tranfer.from
+//and allows only the admin to withdraw
+// then stores the data or deposited address to amount deposited into a mapping every time some deposited. haha.
+// I hope you like it. Solidity is fun.
+//Lets go ahead and run the contract in the VM. then we will deploy or debug first if we encounter any problems
+//alright it works!. // That is it for this contract. link to my github housing all the code for the contract is in the description box.
+//check out my other video on the staking smart contract too,
+
+//CHEERS! :)
